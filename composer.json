@@ -1,0 +1,26 @@
+{
+    "name": "pyncer/snyppet-utility",
+    "type": "library",
+    "description": "Utilities for pyncer snyppets.",
+    "homepage": "https://pyncer.com/snyppet/utility",
+    "license": "Unlicense",
+    "require": {
+        "php": ">=8.3",
+        "pyncer/snyppet": "^1.1.0"
+    },
+    "autoload": {
+        "files": ["src/autoload.php"],
+        "psr-4": {
+            "Pyncer\\Snyppet\\Utility\\": "src/"
+        }
+    },
+    "support": {
+        "issues": "https://github.com/pyncerrc/pyncer-snyppet-utility/issues",
+        "source": "https://github.com/pyncerrc/pyncer-snyppet-utility"
+    },
+    "extra" : {
+        "branch-alias" : {
+            "dev-main" : "1.0-dev"
+        }
+    }
+}
