@@ -9,7 +9,6 @@
         "pyncer/snyppet": "^1.1.0"
     },
     "autoload": {
-        "files": ["src/autoload.php"],
         "psr-4": {
             "Pyncer\\Snyppet\\Utility\\": "src/"
         }

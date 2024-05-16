@@ -2,12 +2,13 @@
 namespace Pyncer\Snyppet\Utility\Data;
 
 use Pyncer\Database\ConnectionInterface;
-use Pyncer\Snyppet\Utility\DataManagerInterface;
-use Pyncer\Snyppet\Utility\TypeInterface;
+use Pyncer\Snyppet\Utility\Data\DataManagerInterface;
+use Pyncer\Snyppet\Utility\Data\TypeInterface;
 use Pyncer\Utility\Params;
 
-use function Pyncer\Array\data_explode as pyncer_data_explode;
-use function Pyncer\Array\data_implode as pyncer_data_implode;
+use function Pyncer\Array\data_explode as pyncer_array_data_explode;
+use function Pyncer\Array\data_implode as pyncer_array_data_implode;
+use function Pyncer\Array\has_compositions as pyncer_array_has_compositions;
 
 abstract class AbstractDataManager extends Params implements DataManagerInterface
 {
@@ -15,35 +16,15 @@ abstract class AbstractDataManager extends Params implements DataManagerInterfac
         protected ConnectionInterface $connection,
     ) {}
 
-    public function getString(string $key, ?string $empty = ''): ?string
-    {
-        $value = parent::getString($key, $empty);
-
-        if (is_string($value) && trim($value) === '') {
-            return $empty;
-        }
-
-        return $value;
-    }
-
-    public function setString(string $key, ?string $value): static
-    {
-        if (is_string($value)) {
-            $value = trim($value);
-        }
-
-        return parent::setString($key, $value);
-    }
-
     public function getArray(string $key, ?array $empty = []): ?Array
     {
-        $value = $this->parseArray($key);
+        $value = $this->getString($key, null);
 
-        if ($value === null || $value === []) {
+        if ($value === null) {
             $value = $empty;
         }
 
-        return $value;
+        return pyncer_array_data_explode(',', $value);
     }
 
     public function setArray(string $key, ?iterable $value): static
@@ -53,24 +34,39 @@ abstract class AbstractDataManager extends Params implements DataManagerInterfac
             return $this;
         }
 
-        $this->set($key, pyncer_data_implode(',', [...$value]));
-        return $this;
+        return $this->set($key, pyncer_array_data_implode(',', [...$value]));
     }
 
-    protected function parseArray(string $key): ?array
+    public function getJson(string $key, ?array $empty = []): ?Array
     {
         $value = $this->getString($key, null);
 
-        if ($value === null) {
+        if ($value === null || !json_validate($value)) {
             return null;
         }
 
-        if ($this implements TypeInterface) {
-            if ($this->getType($key) === 'application/json') {
-                return json_decode($value, true);
-            }
+        $value = json_decode($value, true);
+
+        if ($value === null || $value === []) {
+            return $empty;
         }
 
-        return pyncer_data_explode(',', $value);
+        return $value;
+    }
+
+    public function setJson(string $key, ?iterable $value): static
+    {
+        if ($this instanceof TypeInterface) {
+            $this->setType($key, 'application/json');
+        }
+
+        $value = [...$value];
+
+        if ($value === null || $value === []) {
+            $this->set($key, null);
+            return $this;
+        }
+
+        return $this->set($key, json_encode($value));
     }
 }
