@@ -21,7 +21,7 @@ abstract class AbstractDataManager extends Params implements DataManagerInterfac
         $value = $this->getString($key, null);
 
         if ($value === null) {
-            $value = $empty;
+            return $empty;
         }
 
         return pyncer_array_data_explode(',', $value);
