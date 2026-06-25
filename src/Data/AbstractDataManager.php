@@ -54,15 +54,29 @@ abstract class AbstractDataManager extends Params implements DataManagerInterfac
         return $value;
     }
 
-    public function setJson(string $key, ?iterable $value): static
+    public function setJson(string $key, string|iterable|null $value): static
     {
         if ($this instanceof TypeInterface) {
             $this->setType($key, 'application/json');
         }
 
+        if (is_string($value)) {
+            if (!json_validate($value)) {
+                $value = null;
+            }
+
+            $this->set($key, null);
+            return $this;
+        }
+
+        if ($value === null) {
+            $this->set($key, null);
+            return $this;
+        }
+
         $value = [...$value];
 
-        if ($value === null || $value === []) {
+        if ($value === []) {
             $this->set($key, null);
             return $this;
         }
