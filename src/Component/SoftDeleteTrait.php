@@ -1,5 +1,5 @@
 <?php
-namespace Pyncer\Snyppet\Utility\Data;
+namespace Pyncer\Snyppet\Utility\Component;
 
 trait SoftDeleteTrait
 {
