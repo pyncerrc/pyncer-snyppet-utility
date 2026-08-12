@@ -30,8 +30,7 @@ abstract class AbstractDataManager extends Params implements DataManagerInterfac
     public function setArray(string $key, ?iterable $value): static
     {
         if ($value === null) {
-            $this->set($key, null);
-            return $this;
+            return $this->set($key, null);
         }
 
         return $this->set($key, pyncer_array_data_implode(',', [...$value]));
